@@ -1,0 +1,34 @@
+version: '3'
+services:
+  web:
+    build:
+      context: .
+      args:
+        RAILS_ENV: development
+    volumes:
+      - .:/app:cached
+    environment:
+      WEBPACKER_DEV_SERVER_HOST: webpack_dev_server
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+      - webpack_dev_server
+
+  db:
+    image: postgres
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data:cached
+  
+  webpack_dev_server:
+    command: ./bin/webpack-dev-server
+    build:
+      context: .
+      args:
+        RAILS_ENV: development
+    environment:
+      WEBPACKER_DEV_SERVER_HOST: '0.0.0.0'
+    ports:
+      - '3035:3035'
+    volumes:
+      - .:/app:cached
