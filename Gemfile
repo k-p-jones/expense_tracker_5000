@@ -17,6 +17,14 @@ gem 'devise'
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
+  gem 'rspec-rails'
+end
+
+group :test do
+  gem 'factory_bot_rails'
+  gem 'shoulda-matchers'
+  gem 'faker'
+  gem 'database_cleaner'
 end
 
 group :development do
