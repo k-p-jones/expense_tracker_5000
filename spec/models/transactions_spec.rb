@@ -12,4 +12,9 @@ RSpec.describe Transaction, type: :model do
     it { is_expected.to validate_presence_of(:date) }
     it { is_expected.to validate_presence_of(:cost) }
   end
+
+  it 'has a valid factory' do
+    transaction = create(:transaction)
+    expect(transaction).to be_valid
+  end
 end
