@@ -13,7 +13,7 @@ class TransactionsController < ApplicationController
   end
 
   def create
-    @transaction = Transaction.create!(transaction_params)
+    @transaction = current_user.transactions.create!(transaction_params)
     json_response(@transaction, :created)
   end
 
@@ -30,7 +30,7 @@ class TransactionsController < ApplicationController
   private
 
   def transaction_params
-    params.require(:transaction).permit(:description, :date, :cost)
+    params.permit(:description, :date, :cost)
   end
 
   def set_transation
