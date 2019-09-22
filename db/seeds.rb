@@ -5,3 +5,17 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+
+# Dummy data for the development environment
+
+if Rails.env.development?
+  user = User.create!(email: 'test.user@email.com', password: 'password')
+  20.times do
+    attrs = {
+      description: Faker::Lorem.words(number: 3).join(' '),
+      date: Faker::Date.between(from: 10.days.ago, to: Date.today),
+      cost: rand(1.0...200.0).round(2)
+    }
+    user.transactions.create(attrs)
+  end
+end
