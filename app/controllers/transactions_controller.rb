@@ -8,7 +8,7 @@ class TransactionsController < ApplicationController
   before_action :set_transation, only: [:update, :destroy]
 
   def index
-    @transactions = current_user.transactions.all
+    @transactions = current_user.transactions.all.order(date: :desc)
     json_response(@transactions)
   end
 
