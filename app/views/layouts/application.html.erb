@@ -4,20 +4,36 @@
     <title>ExpenseTracker5000</title>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-    <link
-      rel="stylesheet"
-      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
-      crossorigin="anonymous"
-    />
 
-    <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
-    <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+    <%= stylesheet_pack_tag 'stylesheets', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
   </head>
 
   <body>
-    <p class="notice"><%= notice %></p>
-    <p class="alert"><%= alert %></p>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <a class="navbar-brand" href="#">Expense Tracker 5000</a>
+      <ul class="navbar-nav ml-auto">
+        <% if user_signed_in? %>
+          <li class="nav-item active">
+            <%= link_to 'Log out', destroy_user_session_path, method: :delete, class: 'nav-link '%>
+          </li>
+        <% end %>
+      </ul>
+    </nav>
+    <div class="container">
+      <div class="row justify-content-sm-center">
+        <div class="col-sm-6">
+          <% flash.each do |type, msg| %>
+            <div class="alert alert-<%= type == 'alert' ? 'danger' : 'info' %> alert-dismissible fade show" role="alert">
+              <%= msg %>
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
     <%= yield %>
   </body>
 </html>
