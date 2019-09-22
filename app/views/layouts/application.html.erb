@@ -11,7 +11,7 @@
 
   <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-      <a class="navbar-brand" href="#">Expense Tracker 5000</a>
+      <%= link_to 'Expense Tracker 5000', root_path, class: 'navbar-brand'%>
       <ul class="navbar-nav ml-auto">
         <% if user_signed_in? %>
           <li class="nav-item active">
