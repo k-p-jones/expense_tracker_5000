@@ -13,7 +13,7 @@ if Rails.env.development?
   20.times do
     attrs = {
       description: Faker::Lorem.words(number: 3).join(' '),
-      date: Faker::Date.between(from: 10.days.ago, to: Date.today),
+      date: Faker::Date.between(from: 2.months.ago, to: Date.today),
       cost: rand(1.0...200.0).round(2)
     }
     user.transactions.create(attrs)
