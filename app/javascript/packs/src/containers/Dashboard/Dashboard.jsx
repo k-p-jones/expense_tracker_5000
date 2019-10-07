@@ -1,6 +1,7 @@
 import React from 'react';
-import { Container, Row, Col, Table, Button, ButtonGroup } from 'react-bootstrap';
+import { Container, Row, Col, Table } from 'react-bootstrap';
 import axios from 'axios';
+import Transaction from '../../components/Transaction/Transaction';
 
 class Dashboard extends React.Component {
   state = {
@@ -18,17 +19,14 @@ class Dashboard extends React.Component {
   render() {
     const transactions = this.state.transactions.map(transaction => {
       return(
-        <tr key={transaction.id}>
-          <td>{transaction.description}</td>
-          <td>{transaction.date}</td>
-          <td>£{transaction.cost}</td>
-          <td className="text-center">
-            <ButtonGroup aria-label="Basic example">
-              <Button variant="warning">Edit</Button>
-              <Button variant="danger" onClick={ () => this.removeTransaction(transaction.id) }>Delete</Button>
-            </ButtonGroup>
-          </td>
-        </tr>
+        <Transaction
+          key={transaction.id}
+          id={transaction.id}
+          description={transaction.description}
+          date={transaction.date}
+          cost={transaction.cost}
+          removeTransaction={this.removeTransaction}
+        />
       );
     });
     return(
@@ -36,21 +34,19 @@ class Dashboard extends React.Component {
         <Container>
           <Row>
             <Col xs={{span: 12}} md={{span: 10, offset: 1}}>
-              <div className="dashboard-table">
-                <Table responsive bordered className="dashboard-table">
-                  <thead>
-                    <tr>
-                      <th>Description</th>
-                      <th>Date</th>
-                      <th>Cost</th>
-                      <th className="text-center">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    { transactions }
-                  </tbody>
-                </Table>
-              </div>
+              <Table responsive bordered className="dashboard-table">
+                <thead>
+                  <tr>
+                    <th>Description</th>
+                    <th>Date</th>
+                    <th>Cost</th>
+                    <th className="text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  { transactions }
+                </tbody>
+              </Table>
             </Col>
           </Row>
         </Container>
@@ -65,6 +61,7 @@ class Dashboard extends React.Component {
       this.setState({ transactions: updatedTransactions });
     })
     .catch(error => {
+      // Trigger a dissmissable alert here.
       console.log(error.message);
     })
   }
