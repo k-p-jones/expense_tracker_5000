@@ -9,23 +9,23 @@ class Dashboard extends React.Component {
 
   componentDidMount() {
     axios.get('/transactions')
-    .then(res => {
-      const transactions = res.data;
-      this.setState({ transactions: transactions })
+    .then(response => {
+      const transactions = response.data;
+      this.setState({ transactions: transactions });
     });
   }
 
   render() {
-    const transactions = this.state.transactions.map(t => {
+    const transactions = this.state.transactions.map(transaction => {
       return(
-        <tr key={t.id}>
-          <td>{t.description}</td>
-          <td>{t.date}</td>
-          <td>£{t.cost}</td>
+        <tr key={transaction.id}>
+          <td>{transaction.description}</td>
+          <td>{transaction.date}</td>
+          <td>£{transaction.cost}</td>
           <td className="text-center">
             <ButtonGroup aria-label="Basic example">
               <Button variant="warning">Edit</Button>
-              <Button variant="danger">Delete</Button>
+              <Button variant="danger" onClick={ () => this.removeTransaction(transaction.id) }>Delete</Button>
             </ButtonGroup>
           </td>
         </tr>
@@ -56,6 +56,17 @@ class Dashboard extends React.Component {
         </Container>
       </div>
     );
+  }
+
+  removeTransaction = (id) => {
+    axios.delete(`/transactions/${id}`)
+    .then(_ => {
+      const updatedTransactions = this.state.transactions.filter(transaction => transaction.id !== id);
+      this.setState({ transactions: updatedTransactions });
+    })
+    .catch(error => {
+      console.log(error.message);
+    })
   }
 }
 
