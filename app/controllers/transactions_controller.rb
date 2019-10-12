@@ -30,7 +30,7 @@ class TransactionsController < ApplicationController
   private
 
   def transaction_params
-    params.permit(:description, :date, :cost)
+    params.require(:transaction).permit(:description, :date, :cost)
   end
 
   def set_transation

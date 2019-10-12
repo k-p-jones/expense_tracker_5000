@@ -44,12 +44,14 @@ RSpec.describe 'Transactions API', type: :request do
   end
 
   describe 'POST /transactions' do
-    let(:invalid_attributes) { { date: '20-11-2019' } }
+    let(:invalid_attributes) { { transaction: { date: '20-11-2019' } } }
     let(:valid_attributes) do
       {
-        description: 'Ipad',
-        date: '11-11-19',
-        cost: 329.99
+        transaction: {
+          description: 'Ipad',
+          date: '11-11-19',
+          cost: 329.99
+        }
       }
     end
 
@@ -69,7 +71,7 @@ RSpec.describe 'Transactions API', type: :request do
 
         it 'creates a transaction' do
           transaction = JSON.parse(response.body)
-          expect(transaction['description']).to eq(valid_attributes[:description])
+          expect(transaction['description']).to eq(valid_attributes[:transaction][:description])
         end
 
         it 'returns status code 201' do
@@ -94,7 +96,7 @@ RSpec.describe 'Transactions API', type: :request do
 
   describe 'PUT /transactions/:id' do
     let(:transaction_id)   { transactions.first.id }
-    let(:valid_attributes) { { description: 'New Description' } }
+    let(:valid_attributes) { { transaction: { description: 'New Description' } } }
 
     context 'without a user signed in' do
       subject { put "/transactions/#{transaction_id}", params: valid_attributes }
