@@ -45,12 +45,16 @@ class Dashboard extends React.Component {
     return(
       <div>
         <Container>
-          <Notifier
-            show={this.state.notifierActive}
-            handleNotifierDismiss={this.handleNotifierDismiss}
-            message={this.state.notifierMessage}
-            type={this.state.notifierType}
-          />
+          <Row>
+            <Col xs={{span: 12}} md={{span: 10, offset: 1}}>
+              <Notifier
+                show={this.state.notifierActive}
+                handleNotifierDismiss={this.handleNotifierDismiss}
+                message={this.state.notifierMessage}
+                type={this.state.notifierType}
+              />
+            </Col>
+          </Row>
           <Row style={{marginBottom: 10, textAlign: 'right'}}>
             <Col xs={{span: 12}} md={{span: 10, offset: 1}}>
               <Button variant="success" onClick={this.toggleForm}>New</Button>
