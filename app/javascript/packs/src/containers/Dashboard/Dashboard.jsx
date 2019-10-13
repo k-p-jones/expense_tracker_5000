@@ -2,6 +2,7 @@ import React from 'react';
 import { Container, Row, Col, Table, Button, Modal, Form } from 'react-bootstrap';
 import axios from 'axios';
 import Transaction from '../../components/Transaction/Transaction';
+import Notifier from '../../components/Notifier/Notifier';
 
 class Dashboard extends React.Component {
   state = {
@@ -11,7 +12,10 @@ class Dashboard extends React.Component {
     formDate: '',
     formCost: '',
     editMode: false,
-    selectedTransactionId: undefined
+    selectedTransactionId: undefined,
+    notifierActive: false,
+    notifierMessage: '',
+    notifierType: ''
   }
 
   componentDidMount() {
@@ -41,6 +45,12 @@ class Dashboard extends React.Component {
     return(
       <div>
         <Container>
+          <Notifier
+            show={this.state.notifierActive}
+            handleNotifierDismiss={this.handleNotifierDismiss}
+            message={this.state.notifierMessage}
+            type={this.state.notifierType}
+          />
           <Row style={{marginBottom: 10, textAlign: 'right'}}>
             <Col xs={{span: 12}} md={{span: 10, offset: 1}}>
               <Button variant="success" onClick={this.toggleForm}>New</Button>
@@ -124,12 +134,16 @@ class Dashboard extends React.Component {
     axios.delete(`/transactions/${id}`)
     .then(_ => {
       const updatedTransactions = this.state.transactions.filter(transaction => transaction.id !== id);
-      this.setState({ transactions: updatedTransactions });
+      this.setState(
+        {
+          transactions: updatedTransactions,
+          notifierActive: true,
+          notifierType: 'success',
+          notifierMessage: `Deleted transaction ${id}!`
+        }
+      );
     })
-    .catch(error => {
-      // Trigger a dissmissable alert here.
-      console.log(error.message);
-    })
+    .catch(error => console.log(error.message));
   }
 
   handleFormInputChange = (event) => {
@@ -162,7 +176,14 @@ class Dashboard extends React.Component {
       const transactionIndex = transactions.findIndex(t => t.id === this.state.selectedTransactionId);
       transactions[transactionIndex] = {...transactions[transactionIndex], ...transactionData.transaction};
       const sortedTransactions = this.sortedTransactionsByDate(transactions);
-      this.setState({transactions: sortedTransactions});
+      this.setState(
+        {
+          transactions: sortedTransactions,
+          notifierActive: true,
+          notifierType: 'success',
+          notifierMessage: `Updated transaction ${this.state.selectedTransactionId}!`
+        }
+      );
       this.clearForm();
     });
   }
@@ -178,10 +199,12 @@ class Dashboard extends React.Component {
           transactions: sortedTransactions,
           formDescription: '',
           formDate: '',
-          formCost: ''
+          formCost: '',
+          notifierActive: true,
+          notifierType: 'success',
+          notifierMessage: 'Created new transaction!'
         }
       );
-      // Trigger a dissmissable alert here?
       this.toggleForm();
     });
   }
@@ -224,6 +247,16 @@ class Dashboard extends React.Component {
       // I do not think this is very performant at scale, but it will do for now.
       return new Date(b.date) - new Date(a.date);
     });
+  }
+
+  handleNotifierDismiss = () => {
+    this.setState(
+      {
+        notifierActive: false,
+        notifierMessage: '',
+        notifierType: ''
+      }
+    )
   }
 }
 
