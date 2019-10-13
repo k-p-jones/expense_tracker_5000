@@ -9,7 +9,9 @@ class Dashboard extends React.Component {
     showForm: false,
     formDescription: '',
     formDate: '',
-    formCost: ''
+    formCost: '',
+    editMode: false,
+    selectedTransactionId: undefined
   }
 
   componentDidMount() {
@@ -30,6 +32,9 @@ class Dashboard extends React.Component {
           date={transaction.date}
           cost={transaction.cost}
           removeTransaction={this.removeTransaction}
+          toggleEditMode={this.toggleEditMode}
+          toggleForm={this.toggleForm}
+          populateEditForm={this.populateEditForm}
         />
       );
     });
@@ -60,13 +65,13 @@ class Dashboard extends React.Component {
           </Row>
           <Modal
             show={this.state.showForm}
-            onHide={() => this.toggleForm()}
+            onHide={() => this.clearForm()}
             dialogClassName="modal-90w"
             aria-labelledby="new-transaction-title"
           >
             <Modal.Header closeButton>
               <Modal.Title id="new-transaction-title">
-                New Transaction
+                {this.state.editMode ? 'Edit' : 'New'} Transaction
               </Modal.Title>
             </Modal.Header>
             <Modal.Body>
@@ -143,6 +148,30 @@ class Dashboard extends React.Component {
         cost: this.state.formCost
       }
     };
+    if (this.state.editMode) {
+      this.updateTransaction(transactionData);
+    } else {
+      this.addTransaction(transactionData);
+    }
+  }
+
+  updateTransaction = (transactionData) => {
+    axios.patch(`/transactions/${this.state.selectedTransactionId}`, transactionData)
+    .then(_ => {
+      const transactions = [...this.state.transactions]
+      const transactionIndex = transactions.findIndex(t => t.id === this.state.selectedTransactionId);
+      transactions[transactionIndex] = {...transactions[transactionIndex], ...transactionData.transaction};
+      // ensure transactions are in proper date order after edit.
+      const sortedTransactions = transactions.sort((a, b) => {
+        // I do not think this is very performant at scale, but it will do for now.
+        return new Date(b.date) - new Date(a.date);
+      });
+      this.setState({transactions: sortedTransactions});
+      this.clearForm();
+    });
+  }
+
+  addTransaction = (transactionData) => {
     axios.post('/transactions', transactionData)
     .then(response => {
       // Refactor: Logic for sorting transactions by date could sit in its
@@ -163,11 +192,39 @@ class Dashboard extends React.Component {
       );
       // Trigger a dissmissable alert here?
       this.toggleForm();
-    })
+    });
+  }
+
+  populateEditForm = (description, cost, date, id) => {
+    this.setState(
+      {
+        formDescription: description,
+        formCost: cost,
+        formDate: date,
+        selectedTransactionId: id
+      }
+    );
+  }
+
+  clearForm = () => {
+    this.toggleForm();
+    if (this.state.editMode) { this.toggleEditMode(); }
+    this.setState(
+      {
+        formDescription: '',
+        formDate: '',
+        formCost: '',
+        selectedTransactionId: undefined
+      }
+    );
   }
 
   toggleForm = () => {
     this.setState({showForm: !this.state.showForm});
+  }
+
+  toggleEditMode = () => {
+    this.setState({editMode: !this.state.editMode});
   }
 }
 
