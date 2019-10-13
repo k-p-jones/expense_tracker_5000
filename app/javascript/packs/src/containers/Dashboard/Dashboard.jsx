@@ -161,11 +161,7 @@ class Dashboard extends React.Component {
       const transactions = [...this.state.transactions]
       const transactionIndex = transactions.findIndex(t => t.id === this.state.selectedTransactionId);
       transactions[transactionIndex] = {...transactions[transactionIndex], ...transactionData.transaction};
-      // ensure transactions are in proper date order after edit.
-      const sortedTransactions = transactions.sort((a, b) => {
-        // I do not think this is very performant at scale, but it will do for now.
-        return new Date(b.date) - new Date(a.date);
-      });
+      const sortedTransactions = this.sortedTransactionsByDate(transactions);
       this.setState({transactions: sortedTransactions});
       this.clearForm();
     });
@@ -174,14 +170,9 @@ class Dashboard extends React.Component {
   addTransaction = (transactionData) => {
     axios.post('/transactions', transactionData)
     .then(response => {
-      // Refactor: Logic for sorting transactions by date could sit in its
-      // own function.
       const newTransaction = response.data;
       const updatedTransactions = this.state.transactions.concat(newTransaction);
-      const sortedTransactions = updatedTransactions.sort((a, b) => {
-        // I do not think this is very performant at scale, but it will do for now.
-        return new Date(b.date) - new Date(a.date);
-      });
+      const sortedTransactions = this.sortedTransactionsByDate(updatedTransactions);
       this.setState(
         {
           transactions: sortedTransactions,
@@ -225,6 +216,14 @@ class Dashboard extends React.Component {
 
   toggleEditMode = () => {
     this.setState({editMode: !this.state.editMode});
+  }
+
+  // Sorts transactions in descending date order.
+  sortedTransactionsByDate = (transactions) => {
+    return transactions.sort((a, b) => {
+      // I do not think this is very performant at scale, but it will do for now.
+      return new Date(b.date) - new Date(a.date);
+    });
   }
 }
 
