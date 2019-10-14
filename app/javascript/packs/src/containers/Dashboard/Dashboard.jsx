@@ -239,14 +239,6 @@ import transactionStore from '../../stores/Transactions/transactionStore';
     this.setState({editMode: !this.state.editMode});
   }
 
-  // Sorts transactions in descending date order.
-  sortedTransactionsByDate = (transactions) => {
-    return transactions.sort((a, b) => {
-      // I do not think this is very performant at scale, but it will do for now.
-      return new Date(b.date) - new Date(a.date);
-    });
-  }
-
   handleNotifierDismiss = () => {
     this.setState(
       {
