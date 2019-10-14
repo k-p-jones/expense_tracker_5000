@@ -3,10 +3,11 @@ import { Container, Row, Col, Table, Button, Modal, Form } from 'react-bootstrap
 import axios from 'axios';
 import Transaction from '../../components/Transaction/Transaction';
 import Notifier from '../../components/Notifier/Notifier';
+import { observer } from 'mobx-react';
+import transactionStore from '../../stores/Transactions/transactionStore';
 
-class Dashboard extends React.Component {
+@observer class Dashboard extends React.Component {
   state = {
-    transactions: [],
     showForm: false,
     formDescription: '',
     formDate: '',
@@ -22,12 +23,12 @@ class Dashboard extends React.Component {
     axios.get('/transactions')
     .then(response => {
       const transactions = response.data;
-      this.setState({ transactions: transactions });
+      transactionStore.setTransactions(transactions);
     });
   }
 
   render() {
-    const transactions = this.state.transactions.map(transaction => {
+    const transactions = transactionStore.transactions.map(transaction => {
       return(
         <Transaction
           key={transaction.id}
@@ -137,10 +138,9 @@ class Dashboard extends React.Component {
   removeTransaction = (id) => {
     axios.delete(`/transactions/${id}`)
     .then(_ => {
-      const updatedTransactions = this.state.transactions.filter(transaction => transaction.id !== id);
+      transactionStore.removeTransaction(id);
       this.setState(
         {
-          transactions: updatedTransactions,
           notifierActive: true,
           notifierType: 'success',
           notifierMessage: `Deleted transaction ${id}!`
@@ -176,13 +176,9 @@ class Dashboard extends React.Component {
   updateTransaction = (transactionData) => {
     axios.patch(`/transactions/${this.state.selectedTransactionId}`, transactionData)
     .then(_ => {
-      const transactions = [...this.state.transactions]
-      const transactionIndex = transactions.findIndex(t => t.id === this.state.selectedTransactionId);
-      transactions[transactionIndex] = {...transactions[transactionIndex], ...transactionData.transaction};
-      const sortedTransactions = this.sortedTransactionsByDate(transactions);
+      transactionStore.updateTransaction(this.state.selectedTransactionId, transactionData.transaction);
       this.setState(
         {
-          transactions: sortedTransactions,
           notifierActive: true,
           notifierType: 'success',
           notifierMessage: `Updated transaction ${this.state.selectedTransactionId}!`
@@ -196,11 +192,9 @@ class Dashboard extends React.Component {
     axios.post('/transactions', transactionData)
     .then(response => {
       const newTransaction = response.data;
-      const updatedTransactions = this.state.transactions.concat(newTransaction);
-      const sortedTransactions = this.sortedTransactionsByDate(updatedTransactions);
+      transactionStore.addTransaction(newTransaction);
       this.setState(
         {
-          transactions: sortedTransactions,
           formDescription: '',
           formDate: '',
           formCost: '',
