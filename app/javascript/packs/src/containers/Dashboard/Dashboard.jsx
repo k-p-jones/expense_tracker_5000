@@ -5,6 +5,7 @@ import Transaction from '../../components/Transaction/Transaction';
 import Notifier from '../../components/Notifier/Notifier';
 import { observer } from 'mobx-react';
 import transactionStore from '../../stores/Transactions/transactionStore';
+import notifierStore from '../../stores/NotifierStore/NotifierStore';
 
 @observer class Dashboard extends React.Component {
   state = {
@@ -14,9 +15,6 @@ import transactionStore from '../../stores/Transactions/transactionStore';
     formCost: '',
     editMode: false,
     selectedTransactionId: undefined,
-    notifierActive: false,
-    notifierMessage: '',
-    notifierType: ''
   }
 
   componentDidMount() {
@@ -48,12 +46,7 @@ import transactionStore from '../../stores/Transactions/transactionStore';
         <Container>
           <Row>
             <Col xs={{span: 12}} md={{span: 10, offset: 1}}>
-              <Notifier
-                show={this.state.notifierActive}
-                handleNotifierDismiss={this.handleNotifierDismiss}
-                message={this.state.notifierMessage}
-                type={this.state.notifierType}
-              />
+              <Notifier />
             </Col>
           </Row>
           <Row style={{marginBottom: 10, textAlign: 'right'}}>
@@ -139,13 +132,9 @@ import transactionStore from '../../stores/Transactions/transactionStore';
     axios.delete(`/transactions/${id}`)
     .then(_ => {
       transactionStore.removeTransaction(id);
-      this.setState(
-        {
-          notifierActive: true,
-          notifierType: 'success',
-          notifierMessage: `Deleted transaction ${id}!`
-        }
-      );
+      notifierStore.setActive(true);
+      notifierStore.setType('success');
+      notifierStore.setMessage(`Deleted transaction ${id}!`)
     })
     .catch(error => console.log(error.message));
   }
@@ -177,13 +166,9 @@ import transactionStore from '../../stores/Transactions/transactionStore';
     axios.patch(`/transactions/${this.state.selectedTransactionId}`, transactionData)
     .then(_ => {
       transactionStore.updateTransaction(this.state.selectedTransactionId, transactionData.transaction);
-      this.setState(
-        {
-          notifierActive: true,
-          notifierType: 'success',
-          notifierMessage: `Updated transaction ${this.state.selectedTransactionId}!`
-        }
-      );
+      notifierStore.setActive(true);
+      notifierStore.setType('success');
+      notifierStore.setMessage(`Updated transaction ${this.state.selectedTransactionId}!`)
       this.clearForm();
     });
   }
@@ -193,14 +178,15 @@ import transactionStore from '../../stores/Transactions/transactionStore';
     .then(response => {
       const newTransaction = response.data;
       transactionStore.addTransaction(newTransaction);
+      notifierStore.setActive(true);
+      notifierStore.setType('success');
+      notifierStore.setMessage('Created new transaction');
+
       this.setState(
         {
           formDescription: '',
           formDate: '',
           formCost: '',
-          notifierActive: true,
-          notifierType: 'success',
-          notifierMessage: 'Created new transaction!'
         }
       );
       this.toggleForm();
@@ -237,16 +223,6 @@ import transactionStore from '../../stores/Transactions/transactionStore';
 
   toggleEditMode = () => {
     this.setState({editMode: !this.state.editMode});
-  }
-
-  handleNotifierDismiss = () => {
-    this.setState(
-      {
-        notifierActive: false,
-        notifierMessage: '',
-        notifierType: ''
-      }
-    )
   }
 }
 
