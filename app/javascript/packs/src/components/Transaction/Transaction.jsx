@@ -1,11 +1,25 @@
 import React from 'react';
 import { Button, ButtonGroup } from 'react-bootstrap';
+import axios from 'axios';
+import notifierStore from '../../stores/NotifierStore/NotifierStore'
+import transactionStore from '../../stores/TransactionStore/transactionStore';
 
 const Transaction = (props) => {
   const triggerEditForm = () => {
     props.toggleEditMode();
     props.toggleForm();
     props.populateEditForm(props.description, props.cost, props.date, props.id);
+  }
+
+  const removeTransaction = () => {
+    axios.delete(`/transactions/${props.id}`)
+    .then(_ => {
+      transactionStore.removeTransaction(props.id);
+      notifierStore.setActive(true);
+      notifierStore.setType('success');
+      notifierStore.setMessage(`Deleted transaction ${props.id}!`)
+    })
+    .catch(error => console.log(error.message));
   }
 
   return (
@@ -16,7 +30,7 @@ const Transaction = (props) => {
       <td className="text-center">
         <ButtonGroup aria-label="Basic example">
           <Button variant="warning" onClick={triggerEditForm}>Edit</Button>
-          <Button variant="danger" onClick={ () => props.removeTransaction(props.id) }>Delete</Button>
+          <Button variant="danger" onClick={ () => removeTransaction() }>Delete</Button>
         </ButtonGroup>
       </td>
     </tr>

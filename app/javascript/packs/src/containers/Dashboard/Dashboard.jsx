@@ -4,7 +4,7 @@ import axios from 'axios';
 import Transaction from '../../components/Transaction/Transaction';
 import Notifier from '../../components/Notifier/Notifier';
 import { observer } from 'mobx-react';
-import transactionStore from '../../stores/Transactions/transactionStore';
+import transactionStore from '../../stores/TransactionStore/transactionStore';
 import notifierStore from '../../stores/NotifierStore/NotifierStore';
 
 @observer class Dashboard extends React.Component {
@@ -34,7 +34,6 @@ import notifierStore from '../../stores/NotifierStore/NotifierStore';
           description={transaction.description}
           date={transaction.date}
           cost={transaction.cost}
-          removeTransaction={this.removeTransaction}
           toggleEditMode={this.toggleEditMode}
           toggleForm={this.toggleForm}
           populateEditForm={this.populateEditForm}
@@ -126,17 +125,6 @@ import notifierStore from '../../stores/NotifierStore/NotifierStore';
         </Container>
       </div>
     );
-  }
-
-  removeTransaction = (id) => {
-    axios.delete(`/transactions/${id}`)
-    .then(_ => {
-      transactionStore.removeTransaction(id);
-      notifierStore.setActive(true);
-      notifierStore.setType('success');
-      notifierStore.setMessage(`Deleted transaction ${id}!`)
-    })
-    .catch(error => console.log(error.message));
   }
 
   handleFormInputChange = (event) => {
