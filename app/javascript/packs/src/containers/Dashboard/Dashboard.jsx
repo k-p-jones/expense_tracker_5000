@@ -6,17 +6,9 @@ import Notifier from '../../components/Notifier/Notifier';
 import { observer } from 'mobx-react';
 import transactionStore from '../../stores/TransactionStore/transactionStore';
 import notifierStore from '../../stores/NotifierStore/NotifierStore';
+import formStore from '../../stores/FormStore/FormStore';
 
 @observer class Dashboard extends React.Component {
-  state = {
-    showForm: false,
-    formDescription: '',
-    formDate: '',
-    formCost: '',
-    editMode: false,
-    selectedTransactionId: undefined,
-  }
-
   componentDidMount() {
     axios.get('/transactions')
     .then(response => {
@@ -34,9 +26,6 @@ import notifierStore from '../../stores/NotifierStore/NotifierStore';
           description={transaction.description}
           date={transaction.date}
           cost={transaction.cost}
-          toggleEditMode={this.toggleEditMode}
-          toggleForm={this.toggleForm}
-          populateEditForm={this.populateEditForm}
         />
       );
     });
@@ -71,14 +60,14 @@ import notifierStore from '../../stores/NotifierStore/NotifierStore';
             </Col>
           </Row>
           <Modal
-            show={this.state.showForm}
+            show={formStore.showForm}
             onHide={() => this.clearForm()}
             dialogClassName="modal-90w"
             aria-labelledby="new-transaction-title"
           >
             <Modal.Header closeButton>
               <Modal.Title id="new-transaction-title">
-                {this.state.editMode ? 'Edit' : 'New'} Transaction
+                {formStore.editMode ? 'Edit' : 'New'} Transaction
               </Modal.Title>
             </Modal.Header>
             <Modal.Body>
@@ -89,8 +78,8 @@ import notifierStore from '../../stores/NotifierStore/NotifierStore';
                     name="formDescription"
                     type="text"
                     placeholder="Groceries etc.."
-                    onChange={this.handleFormInputChange}
-                    value={this.state.formDescription}
+                    onChange={this.handleFormDescriptionChange}
+                    value={formStore.description}
                     required
                   />
                 </Form.Group>
@@ -101,8 +90,8 @@ import notifierStore from '../../stores/NotifierStore/NotifierStore';
                     type="number"
                     placeholder="4.04"
                     step="0.01"
-                    onChange={this.handleFormInputChange}
-                    value={this.state.formCost}
+                    onChange={this.handleFormCostChange}
+                    value={formStore.cost}
                     required
                   />
                 </Form.Group>
@@ -111,8 +100,8 @@ import notifierStore from '../../stores/NotifierStore/NotifierStore';
                   <Form.Control
                     name="formDate"
                     type="date"
-                    onChange={this.handleFormInputChange}
-                    value={this.state.formDate}
+                    onChange={this.handleFormDateChange}
+                    value={formStore.date}
                     required
                   />
                 </Form.Group>
@@ -127,23 +116,28 @@ import notifierStore from '../../stores/NotifierStore/NotifierStore';
     );
   }
 
-  handleFormInputChange = (event) => {
-    const target = event.target;
-    const name   = target.name;
-    const value  = target.value;
-    this.setState({ [name]: value })
+  handleFormDateChange = (event) => {
+    formStore.setDate(event.target.value);
+  }
+
+  handleFormDescriptionChange = (event) => {
+    formStore.setDescription(event.target.value);
+  }
+
+  handleFormCostChange = (event) => {
+    formStore.setCost(event.target.value);
   }
 
   handleFormSubmit = (event) => {
     event.preventDefault();
     const transactionData = {
       transaction: {
-        description: this.state.formDescription,
-        date: this.state.formDate,
-        cost: this.state.formCost
+        description: formStore.description,
+        date: formStore.date,
+        cost: formStore.cost
       }
     };
-    if (this.state.editMode) {
+    if (formStore.editMode) {
       this.updateTransaction(transactionData);
     } else {
       this.addTransaction(transactionData);
@@ -151,12 +145,12 @@ import notifierStore from '../../stores/NotifierStore/NotifierStore';
   }
 
   updateTransaction = (transactionData) => {
-    axios.patch(`/transactions/${this.state.selectedTransactionId}`, transactionData)
+    axios.patch(`/transactions/${formStore.selectedTransactionId}`, transactionData)
     .then(_ => {
-      transactionStore.updateTransaction(this.state.selectedTransactionId, transactionData.transaction);
+      transactionStore.updateTransaction(formStore.selectedTransactionId, transactionData.transaction);
       notifierStore.setActive(true);
       notifierStore.setType('success');
-      notifierStore.setMessage(`Updated transaction ${this.state.selectedTransactionId}!`)
+      notifierStore.setMessage(`Updated transaction ${formStore.selectedTransactionId}!`)
       this.clearForm();
     });
   }
@@ -169,48 +163,27 @@ import notifierStore from '../../stores/NotifierStore/NotifierStore';
       notifierStore.setActive(true);
       notifierStore.setType('success');
       notifierStore.setMessage('Created new transaction');
-
-      this.setState(
-        {
-          formDescription: '',
-          formDate: '',
-          formCost: '',
-        }
-      );
+      formStore.clear();
       this.toggleForm();
     });
   }
 
   populateEditForm = (description, cost, date, id) => {
-    this.setState(
-      {
-        formDescription: description,
-        formCost: cost,
-        formDate: date,
-        selectedTransactionId: id
-      }
-    );
+    formStore.populateEditForm(description, cost, date, id);
   }
 
   clearForm = () => {
-    this.toggleForm();
-    if (this.state.editMode) { this.toggleEditMode(); }
-    this.setState(
-      {
-        formDescription: '',
-        formDate: '',
-        formCost: '',
-        selectedTransactionId: undefined
-      }
-    );
+    formStore.toggleShow();
+    if (formStore.editMode) { formStore.toggleEdit(); }
+    formStore.clear();
   }
 
   toggleForm = () => {
-    this.setState({showForm: !this.state.showForm});
+    formStore.toggleShow();
   }
 
   toggleEditMode = () => {
-    this.setState({editMode: !this.state.editMode});
+    formStore.toggleEdit();
   }
 }
 

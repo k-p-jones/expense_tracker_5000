@@ -3,12 +3,13 @@ import { Button, ButtonGroup } from 'react-bootstrap';
 import axios from 'axios';
 import notifierStore from '../../stores/NotifierStore/NotifierStore'
 import transactionStore from '../../stores/TransactionStore/transactionStore';
+import formStore from '../../stores/FormStore/FormStore';
 
 const Transaction = (props) => {
   const triggerEditForm = () => {
-    props.toggleEditMode();
-    props.toggleForm();
-    props.populateEditForm(props.description, props.cost, props.date, props.id);
+    formStore.toggleEdit();
+    formStore.toggleShow();
+    formStore.populateEditForm(props.description, props.cost, props.date, props.id);
   }
 
   const removeTransaction = () => {
@@ -30,7 +31,7 @@ const Transaction = (props) => {
       <td className="text-center">
         <ButtonGroup aria-label="Basic example">
           <Button variant="warning" onClick={triggerEditForm}>Edit</Button>
-          <Button variant="danger" onClick={ () => removeTransaction() }>Delete</Button>
+          <Button variant="danger" onClick={removeTransaction}>Delete</Button>
         </ButtonGroup>
       </td>
     </tr>

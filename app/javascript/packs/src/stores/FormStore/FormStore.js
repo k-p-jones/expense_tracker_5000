@@ -4,6 +4,7 @@ class FormStore {
   @observable showForm = false;
   @observable description = '';
   @observable date = '';
+  @observable cost = '';
   @observable editMode = false;
   @observable selectedTransactionId = undefined;
 
@@ -22,7 +23,7 @@ class FormStore {
     this.selectedTransactionId = undefined;
   }
 
-  @action populateEditForm = (description, cose, date, id) => {
+  @action populateEditForm = (description, cost, date, id) => {
     this.description = description;
     this.cost = cost;
     this.date = date;
