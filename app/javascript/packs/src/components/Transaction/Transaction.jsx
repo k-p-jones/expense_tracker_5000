@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, ButtonGroup } from 'react-bootstrap';
 import axios from 'axios';
 import notifierStore from '../../stores/NotifierStore/NotifierStore'
-import transactionStore from '../../stores/TransactionStore/transactionStore';
+import transactionStore from '../../stores/TransactionStore/TransactionStore';
 import formStore from '../../stores/FormStore/FormStore';
 
 const Transaction = (props) => {

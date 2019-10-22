@@ -3,7 +3,7 @@ import { Alert } from 'react-bootstrap';
 import { observer } from 'mobx-react'
 import notifierStore from '../../stores/NotifierStore/NotifierStore';
 
-const Notifier = observer((props) => {
+const Notifier = observer(() => {
   if (notifierStore.active) {
     return (
       <Alert variant={notifierStore.type} onClose={() => notifierStore.clear()} dismissible>
@@ -11,7 +11,7 @@ const Notifier = observer((props) => {
       </Alert>
     );
   } else {
-    return (<div></div>)
+    return (<div></div>);
   }
 });
 
