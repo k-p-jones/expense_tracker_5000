@@ -2,7 +2,7 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import { Row, Col, Button, Modal, Form } from 'react-bootstrap';
 import formStore from '../../stores/FormStore/FormStore';
-import transactionStore from '../../stores/TransactionStore/TransactionStore';
+import transactionStore from '../../stores/TransactionStore/transactionStore';
 import notifierStore from '../../stores/NotifierStore/NotifierStore';
 import axios from 'axios';
 

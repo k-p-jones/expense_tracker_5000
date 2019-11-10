@@ -4,7 +4,7 @@ import axios from 'axios';
 import Transaction from '../../components/Transaction/Transaction';
 import Notifier from '../../components/Notifier/Notifier';
 import { observer } from 'mobx-react';
-import transactionStore from '../../stores/TransactionStore/TransactionStore';
+import transactionStore from '../../stores/TransactionStore/transactionStore';
 import TransactionForm from '../../components/TransactionForm/TransactionForm';
 
 @observer class Dashboard extends React.Component {
