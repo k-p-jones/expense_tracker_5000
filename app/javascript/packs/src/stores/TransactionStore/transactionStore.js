@@ -1,4 +1,5 @@
 import { observable, action } from 'mobx';
+import axios from 'axios';
 
 class TransactionStore {
   @observable transactions = [];
@@ -11,23 +12,51 @@ class TransactionStore {
     });
   }
 
-  @action setTransactions = (transactions) => {
-    this.transactions = transactions;
+  @action setTransactions = () => {
+    return new Promise((resolve, reject) => {
+      axios.get('/transactions')
+      .then((response) => {
+        this.transactions = response.data;
+        resolve({});
+      })
+      .catch(errors => reject(errors));
+    });
   }
 
-  @action addTransaction = (transaction) => {
-    this.transactions.push(transaction);
-    this.transactions = this.sortTransactionsByDate(this.transactions);
+  @action addTransaction = (transactionData) => {
+    return new Promise((resolve, reject) => {
+      axios.post('/transactions', transactionData)
+      .then((response) => {
+        this.transactions.push(response.data);
+        this.transactions = this.sortTransactionsByDate(this.transactions);
+        resolve(response.data);
+      })
+      .catch(errors => reject(errors));
+    });
   }
 
   @action removeTransaction = (id) => {
-    this.transactions = this.transactions.filter(transaction => transaction.id !== id);
+    return new Promise((resolve, reject) => {
+      axios.delete(`/transactions/${id}`)
+      .then(() => {
+        this.transactions = this.transactions.filter(transaction => transaction.id !== id);
+        resolve({});
+      })
+      .catch(errors => reject(errors));
+    })
   }
 
   @action updateTransaction = (id, transactionData) => {
-    const transactionIndex = this.transactions.findIndex(t => t.id === id);
-    this.transactions[transactionIndex] = {...this.transactions[transactionIndex], ...transactionData};
-    this.transactions = this.sortTransactionsByDate(this.transactions);
+    return new Promise((resolve, reject) => {
+      axios.patch(`/transactions/${id}`, transactionData)
+      .then((response) => {
+        const transactionIndex = this.transactions.findIndex(t => t.id === id);
+        this.transactions[transactionIndex] = {...this.transactions[transactionIndex], ...transactionData};
+        this.transactions = this.sortTransactionsByDate(this.transactions);
+        resolve(response);
+      })
+      .catch((errors) => reject(errors));
+    });
   }
 }
 

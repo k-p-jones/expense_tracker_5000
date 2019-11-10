@@ -1,6 +1,5 @@
 import React from 'react';
 import { Button, ButtonGroup } from 'react-bootstrap';
-import axios from 'axios';
 import notifierStore from '../../stores/NotifierStore/NotifierStore'
 import transactionStore from '../../stores/TransactionStore/transactionStore';
 import formStore from '../../stores/FormStore/FormStore';
@@ -13,9 +12,8 @@ const Transaction = (props) => {
   }
 
   const removeTransaction = () => {
-    axios.delete(`/transactions/${props.id}`)
+    transactionStore.removeTransaction(props.id)
     .then(_ => {
-      transactionStore.removeTransaction(props.id);
       notifierStore.setActive(true);
       notifierStore.setType('success');
       notifierStore.setMessage(`Deleted transaction ${props.id}!`)

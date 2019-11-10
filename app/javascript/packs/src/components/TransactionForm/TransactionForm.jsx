@@ -4,7 +4,6 @@ import { Row, Col, Button, Modal, Form } from 'react-bootstrap';
 import formStore from '../../stores/FormStore/FormStore';
 import transactionStore from '../../stores/TransactionStore/transactionStore';
 import notifierStore from '../../stores/NotifierStore/NotifierStore';
-import axios from 'axios';
 
 const TransactionForm = observer(() => {
   const handleFormDateChange = (event) => {
@@ -36,9 +35,8 @@ const TransactionForm = observer(() => {
   }
 
   const updateTransaction = (transactionData) => {
-    axios.patch(`/transactions/${formStore.selectedTransactionId}`, transactionData)
-    .then(_ => {
-      transactionStore.updateTransaction(formStore.selectedTransactionId, transactionData.transaction);
+    transactionStore.updateTransaction(formStore.selectedTransactionId, transactionData.transaction)
+    .then(() => {
       notifierStore.setActive(true);
       notifierStore.setType('success');
       notifierStore.setMessage(`Updated transaction ${formStore.selectedTransactionId}!`)
@@ -47,10 +45,8 @@ const TransactionForm = observer(() => {
   }
 
   const addTransaction = (transactionData) => {
-    axios.post('/transactions', transactionData)
-    .then(response => {
-      const newTransaction = response.data;
-      transactionStore.addTransaction(newTransaction);
+    transactionStore.addTransaction(transactionData)
+    .then(() => {
       notifierStore.setActive(true);
       notifierStore.setType('success');
       notifierStore.setMessage('Created new transaction!');

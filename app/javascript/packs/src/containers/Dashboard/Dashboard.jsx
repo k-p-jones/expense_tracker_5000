@@ -1,6 +1,5 @@
 import React from 'react';
 import { Container, Row, Col, Table } from 'react-bootstrap';
-import axios from 'axios';
 import Transaction from '../../components/Transaction/Transaction';
 import Notifier from '../../components/Notifier/Notifier';
 import { observer } from 'mobx-react';
@@ -9,11 +8,7 @@ import TransactionForm from '../../components/TransactionForm/TransactionForm';
 
 @observer class Dashboard extends React.Component {
   componentDidMount() {
-    axios.get('/transactions')
-    .then(response => {
-      const transactions = response.data;
-      transactionStore.setTransactions(transactions);
-    });
+    transactionStore.setTransactions();
   }
 
   render() {
