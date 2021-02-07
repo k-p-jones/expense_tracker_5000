@@ -3,7 +3,7 @@
 A simple expense tracker built while learning React.
 
 **Tech Stack**
-* Ruby 5.6.3
+* Ruby 2.6.3
 * Rails 5.2.3
 * React 16.9
 
